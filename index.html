@@ -121,6 +121,9 @@
         <button onclick="changeCoverColor('#F7E7C4')" class="w-5 h-5 rounded-full bg-[#F7E7C4] border border-black/10"></button>
         <button onclick="changeCoverColor('#C9D6C4')" class="w-5 h-5 rounded-full bg-[#C9D6C4] border border-black/10"></button>
         <button onclick="changeCoverColor('#C4D4E3')" class="w-5 h-5 rounded-full bg-[#C4D4E3] border border-black/10"></button>
+<button onclick="exportData()" class="px-3 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300">Yedekle</button>
+<input type="file" id="importFile" onchange="importData(event)" class="hidden">
+<button onclick="document.getElementById('importFile').click()" class="px-3 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300">Geri Yükle</button>
     </div>
 
     <!-- 3D SAHNE -->
@@ -434,6 +437,31 @@ function loadPageContent() {
 }        // ---
 
 window.addEventListener('resize', loadPageContent);
+
+// Verileri bir dosyaya indirme
+function exportData() {
+    const data = JSON.stringify(localStorage);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'defterim_yedek.json';
+    a.click();
+}
+
+// Dosyadan verileri geri yükleme
+function importData(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = JSON.parse(e.target.result);
+        for (let key in content) {
+            localStorage.setItem(key, content[key]);
+        }
+        location.reload(); // Sayfayı yenileyerek verileri göster
+    };
+    reader.readAsText(file);
+}
     </script>
 </body>
 </html>
