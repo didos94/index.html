@@ -114,7 +114,7 @@
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
     <!-- ÜST RENK PALETİ -->
-    <div id="renk-paneli" class="mb-6 flex space-x-3 bg-bej px-5 py-2 rounded-full border border-koyubej shadow-sm z-50 transition-opacity duration-500">
+    <div id="renk-paneli" class="mb-6 flex space-x-3 bg-transparent px-5 py-2 rounded-full border border-koyubej shadow-sm z-50 transition-opacity duration-500">
         <span class="text-xs font-light text-gray-500 self-center mr-2">Kapak Rengi:</span>
         <button onclick="changeCoverColor('#D8C3A5')" class="w-5 h-5 rounded-full bg-[#D8C3A5] border border-black/10"></button>
         <button onclick="changeCoverColor('#F4D7D4')" class="w-5 h-5 rounded-full bg-[#F4D7D4] border border-black/10"></button>
@@ -466,13 +466,17 @@ function importData(event) {
     };
     reader.readAsText(file);
 }
-// Sayfa açıldığında kaydedilen rengi uygula
+// Sayfa yüklendiği anda çalışacak olan kod
 window.addEventListener('load', () => {
+    // 1. LocalStorage'dan kaydedilen rengi çek
     const kaydedilenRenk = localStorage.getItem("kapakRengi");
+    
+    // 2. Eğer daha önce bir renk seçilmişse (kayıtlıysa)
     if (kaydedilenRenk) {
+        // 3. O rengi panelin arka planına uygula
         document.getElementById("renk-paneli").style.backgroundColor = kaydedilenRenk;
     }
-});        
+});
     </script>
 </body>
 </html>
