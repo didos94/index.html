@@ -36,9 +36,9 @@
         .serif-title { font-family: 'Cormorant Garamond', serif; }
         
         .keten-doku {
-            background-image: opacity(0.15), linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+            background-color: #D8C3A5;
+            background-image: linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
             background-size: 3px 3px;
-            background-blend-mode: overlay;
         }
 
         .gold-isleme {
@@ -49,13 +49,7 @@
         }
 
         .kitap-sahnesi { perspective: 2000px; }
-        .defter-3d {
-            width: 460px;
-            height: 620px;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .defter-3d { width: 460px; height: 620px; position: relative; transform-style: preserve-3d; transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
         
         .kapak-on {
             position: absolute; width: 100%; height: 100%;
@@ -71,7 +65,7 @@
 
         .kitap-ic-sayfalar {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
-            width: 95vw; max-w: 1200px; height: 88vh; display: flex;
+            width: 95vw; max-width: 1200px; height: 88vh; display: flex;
             opacity: 0; pointer-events: none; transition: all 0.8s ease-in-out; z-index: 20;
             box-shadow: 0 30px 70px rgba(0,0,0,0.18);
         }
@@ -81,15 +75,13 @@
         .sablon-tablo { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; font-weight: 300; }
         .sablon-tablo td, .sablon-tablo th { border: 1px solid #EBE4D5; padding: 4px 6px; text-align: left; }
         .sablon-tablo th { background-color: #F5F0E6; font-weight: 400; }
-        
         .kesif-kutusu { background: rgba(245, 240, 230, 0.35); border: 1px dashed #EBE4D5; padding: 12px; border-radius: 6px; }
-    </style>
 
-@media (max-width: 768px) {
-    .kitap-ic-sayfalar { flex-direction: column !important; overflow-y: hidden !important; }
-    .sol-sayfa, .sag-sayfa { width: 100% !important; height: 100% !important; position: absolute; top: 0; left: 0; }
-}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+        @media (max-width: 768px) {
+            .kitap-ic-sayfalar { flex-direction: column !important; overflow-y: auto !important; }
+            .sol-sayfa, .sag-sayfa { width: 100% !important; min-height: 50vh; }
+        }
+    </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
@@ -105,10 +97,8 @@
 
     <!-- 3D SAHNE -->
     <div id="sahne" class="kitap-sahnesi w-full flex items-center justify-center relative">
-        
-        <!-- KAPALI DEFTER -->
         <div id="defter" class="defter-3d cursor-pointer" onclick="openNotebook()">
-            <div id="kapakOn" class="kapak-on keten-doku bg-softBej rounded-r-2xl border-l-8 border-black/10 flex flex-col items-center justify-center p-10">
+            <div id="kapakOn" class="kapak-on keten-doku rounded-r-2xl border-l-8 border-black/10 flex flex-col items-center justify-center p-10">
                 <div class="border-2 border-[#BF953F]/40 p-8 rounded-xl text-center max-w-[320px] bg-white/5 backdrop-blur-sm shadow-inner">
                     <h1 id="kapakBasligi" contenteditable="true" onclick="event.stopPropagation()" class="gold-isleme serif-title text-4xl tracking-widest uppercase font-medium focus:outline-none">THE DIARY</h1>
                     <p id="kapakAltBasligi" contenteditable="true" onclick="event.stopPropagation()" class="text-[10px] tracking-widest text-[#BF953F] uppercase mt-3 focus:outline-none font-light">90 DAYS OF GLOW UP</p>
@@ -117,38 +107,20 @@
             <div class="absolute w-full h-full bg-stone-200 rounded-r-2xl shadow-inner transform translate-z-[-2px]"></div>
         </div>
 
-        <!-- SAĞ VE SOL OK NAVİGASYONU -->
         <button onclick="prevPage()" id="solOk" class="absolute left-4 md:left-12 bg-white/60 hover:bg-white text-siyah w-12 h-12 rounded-full flex items-center justify-center shadow-md border border-koyubej transition-all opacity-0 pointer-events-none z-50 text-xl font-light">←</button>
         <button onclick="nextPage()" id="sagOk" class="absolute right-4 md:right-12 bg-white/60 hover:bg-white text-siyah w-12 h-12 rounded-full flex items-center justify-center shadow-md border border-koyubej transition-all opacity-0 pointer-events-none z-50 text-xl font-light">→</button>
 
-// Mobil Kaydırma Motoru
-const icSayfaDiv = document.getElementById('icSayfalar');
-const mc = new Hammer(icSayfaDiv);
-
-mc.on("swipeleft", function() {
-    // Sola kaydırınca sonraki sayfaya git
-    nextPage();
-});
-
-mc.on("swiperight", function() {
-    // Sağa kaydırınca önceki sayfaya git
-    prevPage();
-});
-
-        <!-- 📖 DEFTERİN İÇİ -->
         <div id="icSayfalar" class="kitap-ic-sayfalar bg-krem rounded-xl">
-            
-            <!-- 📄 SOL SAYFA -->
             <div class="sol-sayfa w-1/2 p-12 flex flex-col justify-between overflow-y-auto">
                 <div class="space-y-6">
                     <div class="border-b border-stone-200 pb-3 flex justify-between items-end">
-                        <h2 id="ustBaslikSol" contenteditable="true" class="serif-title text-3xl italic text-siyah focus:outline-none">Sol Sayfa Başlığı</h2>
+                        <h2 id="ustBaslikSol" contenteditable="true" class="serif-title text-3xl italic text-siyah focus:outline-none">Sol Sayfa</h2>
                         <span id="sayfaNoSol" class="text-[11px] text-gray-400 font-light uppercase tracking-wider">S. 1</span>
                     </div>
                     <div id="editorSol" contenteditable="true" class="min-h-[300px] focus:outline-none font-light text-sm leading-relaxed text-siyah tracking-wide"></div>
                     <div class="pt-4 border-t border-dashed border-stone-200">
                         <label class="text-xs font-light text-gray-400 cursor-pointer hover:text-siyah transition flex items-center space-x-2">
-                            <span>🖼️ Fotoğraf Ekle / Kaldır</span>
+                            <span>🖼️ Fotoğraf Ekle</span>
                             <input type="file" accept="image/*" class="hidden" onchange="uploadMultipleImages(this, 'galeriSol')">
                         </label>
                         <div id="galeriSol" class="flex flex-wrap gap-3 mt-4"></div>
@@ -157,44 +129,30 @@ mc.on("swiperight", function() {
                 <button onclick="closeNotebook(event)" class="text-xs font-light text-gray-400 hover:text-siyah transition text-left mt-8">← Kapat & Kilitle</button>
             </div>
 
-            <!-- 📄 SAĞ SAYFA -->
             <div class="sag-sayfa w-1/2 p-12 flex flex-col justify-between overflow-y-auto">
                 <div class="space-y-6">
                     <div class="border-b border-stone-200 pb-3 flex justify-between items-end">
-                        <h2 id="ustBaslikSag" contenteditable="true" class="serif-title text-3xl italic text-siyah focus:outline-none">Sağ Sayfa Başlığı</h2>
+                        <h2 id="ustBaslikSag" contenteditable="true" class="serif-title text-3xl italic text-siyah focus:outline-none">Sağ Sayfa</h2>
                         <span id="sayfaNoSag" class="text-[11px] text-gray-400 font-light uppercase tracking-wider">S. 2</span>
                     </div>
                     <div id="editorSag" contenteditable="true" class="min-h-[300px] focus:outline-none font-light text-sm leading-relaxed text-siyah tracking-wide"></div>
                     <div class="pt-4 border-t border-dashed border-stone-200">
                         <label class="text-xs font-light text-gray-400 cursor-pointer hover:text-siyah transition flex items-center space-x-2">
-                            <span>🖼️ Fotoğraf Ekle / Kaldır</span>
+                            <span>🖼️ Fotoğraf Ekle</span>
                             <input type="file" accept="image/*" class="hidden" onchange="uploadMultipleImages(this, 'galeriSag')">
                         </label>
                         <div id="galeriSag" class="flex flex-wrap gap-3 mt-4"></div>
                     </div>
                 </div>
-
-                <!-- BÖLÜM NAVİGASYONU -->
                 <div class="mt-12 pt-4 border-t border-stone-200">
                     <p class="text-[9px] uppercase tracking-widest text-gray-400 mb-2 font-medium">Bölümler:</p>
-                    <div class="flex flex-wrap gap-1 text-[10px]">
-                        <button onclick="jumpToCilt(1)" class="cilt-btn px-2 py-0.5 bg-siyah text-krem rounded font-light">C1</button>
-                        <button onclick="jumpToCilt(2)" class="cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light">C2</button>
-                        <button onclick="jumpToCilt(3)" class="cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light">C3</button>
-                        <button onclick="jumpToCilt(4)" class="cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light">C4</button>
-                        <button onclick="jumpToCilt(5)" class="cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light">C5</button>
-                        <button onclick="jumpToCilt(6)" class="cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light">C6</button>
-                        <button onclick="jumpToCilt(7)" class="cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light">C7</button>
-                        <button onclick="jumpToCilt(8)" class="cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light">C8</button>
-                        <button onclick="jumpToCilt(9)" class="cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light">C9</button>
-                        <button onclick="jumpToCilt(10)" class="cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light">C10</button>
-                    </div>
+                    <div id="ciltNav" class="flex flex-wrap gap-1 text-[10px]"></div>
                 </div>
             </div>
-
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <script>
         let currentPagePair = 1;
         const maxPagePairs = 150;
@@ -207,8 +165,7 @@ mc.on("swiperight", function() {
             document.getElementById("sagOk").classList.remove("opacity-0", "pointer-events-none");
             loadPageContent();
             loadKapakData();
-        } document.getElementById("kapakBasligi").addEventListener("input", saveKapakData);
-document.getElementById("kapakAltBasligi").addEventListener("input", saveKapakData);
+        }
 
         function closeNotebook(event) {
             event.stopPropagation();
@@ -221,127 +178,7 @@ document.getElementById("kapakAltBasligi").addEventListener("input", saveKapakDa
         }
 
         function changeCoverColor(colorHex) { document.getElementById("kapakOn").style.backgroundColor = colorHex; }
-
-        // KUSURSUZ SIRALI HAFTALIK VE GÜNLÜK AKIŞ MOTORU (Döngü = 12 Sayfa)
-        function getTemplateForPage(pNum) {
-            // İlk sayfa her zaman genel bir açılış/vizyon sayfası olsun
-            if (pNum === 1) {
-                return `✨ Büyük Planlayıcı & Dönüşüm Odakları<br><br><b>Bu Dönemin Büyük Hedefi:</b> <br><b>Mottolarım:</b><br>1. <br>2.`;
-            }
-
-            // Döngü hesabı (Her hafta tam 12 sayfa kaplar: 1 Plan + 4 Keşif + 7 Günlük)
-            let adjustedNum = pNum - 1; 
-            let relativePage = (adjustedNum % 12) + 1;
-            let weekCount = Math.floor(adjustedNum / 12) + 1;
-
-            // 1. HAFTALIK PLANLAYICI
-            if (relativePage === 1) {
-                return `🗓️ Hafta ${weekCount} | Strateji & Öncelikler<br><br><b>Bu Haftanın Ana Hedefleri:</b><br>- <br>- <br><br><b>Unutulmaması Gerekenler:</b>`;
-            }
-
-            // 2. HAFTALIK KEŞİF SAYFALARI (TAM 4 SAYFA - AYRI AYRI)
-            if (relativePage === 2) {
-                return `📚 Hafta ${weekCount} | Okuma Listesi & Kitap Günlüğü<br><br><div class="kesif-kutusu"><b>Okunan Kitap:</b> <br><b>Yazar:</b> <br><br><b>Günün Altını Çizdiğim İlham Verici Cümlesi:</b> </div>`;
-            }
-            if (relativePage === 3) {
-                return `🎬 Hafta ${weekCount} | IMDb Görülmesi Gerekenler & Film Günlüğü<br><br><div class="kesif-kutusu"><b>İzlenen Film / Dizi:</b> <br><b>Benim Puanım:</b> ⭐⭐⭐⭐⭐<br><br><b>Kritik, Analiz & Eleştiri Notları:</b> </div>`;
-            }
-            if (relativePage === 4) {
-                return `🏛️ Hafta ${weekCount} | İstanbul Kültür Rotası (Müze, Sergi, Tiyatro)<br><br><div class="kesif-kutusu"><b>Gidilen Etkinlik / Mekan:</b> <br><b>Rota & Lokasyon:</b> <br><br><b>Sanatsal İzlenimlerim:</b> </div>`;
-            }
-            if (relativePage === 5) {
-                return `🎵 Hafta ${weekCount} | Haftanın Keşif Şarkıları & Kafe Listesi<br><br><div class="kesif-kutusu"><b>Keşfedilen Melodiler / Soundlar:</b> <br><br><b>Haftanın Yeni Nesil Kafe Durağı:</b> </div>`;
-            }
-
-            // 3. 7 GÜNLÜK PLAN VE RUTİNLER SAYFALARI
-            let dayIndex = relativePage - 5; // 1'den 7'ye gün indeksi
-            return `📅 Hafta ${weekCount} / Gün ${dayIndex} | Günlük Akış & Journaling<br><br>Bugün harika hissettiren anlar...<br><br>
-            <div class="mt-4 pt-3 border-t border-stone-200/60">
-                <p class="text-[11px] font-semibold text-stone-500 mb-1 uppercase tracking-wider">🌿 Günlük Rutinler & Bütünsel Takip Paneli</p>
-                <table class="sablon-tablo">
-                    <tr>
-                        <th class="w-1/3">🥦 Günlük Beslenme Planı</th>
-                        <th class="w-1/3">🧴 Cilt, Saç & Bakım Rutini</th>
-                        <th class="w-1/3">💪 Spor & Egzersiz Tablosu</th>
-                    </tr>
-                    <tr>
-                        <td class="align-top text-[10px]">
-                            <b>Sabah:</b> <br>
-                            <b>Öğle:</b> <br>
-                            <b>Akşam:</b> 
-                        </td>
-                        <td class="align-top text-[10px]">
-                            [ ] Cilt (Sabah)<br>
-                            [ ] Cilt (Akşam)<br>
-                            [ ] Saç / Vücut Maskesi
-                        </td>
-                        <td class="align-top text-[10px]">
-                            <b>Rutinim:</b> <br><br>
-                            <b>Diz Sağlığı / Esneme:</b> [ ]
-                        </td>
-                    </tr>
-                    <tr>
-                        <th colspan="2">👗 Günün Kombin Planı (Üst / Alt / Detaylar)</th>
-                        <th>💧 Su İçme Takibi</th>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="text-[10px] italic">Günün stili: </td>
-                        <td class="text-center font-medium text-xs py-2 text-blue-500">💧 💧 💧 💧 💧 💧 💧 💧</td>
-                    </tr>
-                </table>
-            </div>`;
-        }
-
-        function nextPage() {
-            if (currentPagePair < maxPagePairs) {
-                savePageContent();
-                currentPagePair++;
-                loadPageContent();
-            }
-        }
-
-        function prevPage() {
-            if (currentPagePair > 1) {
-                savePageContent();
-                currentPagePair--;
-                loadPageContent();
-            }
-        }
-
-        function jumpToCilt(ciltNum) {
-            savePageContent();
-            let targetPage = ciltBasiSayfalari[ciltNum];
-            currentPagePair = Math.ceil(targetPage / 2);
-            loadPageContent();
-        }
-
-        function uploadMultipleImages(input, galeriId) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const galeri = document.getElementById(galeriId);
-                    const imgId = 'img_' + Date.now();
-                    
-                    const container = document.createElement('div');
-                    container.className = "relative inline-block group w-20 h-20 border border-stone-200 rounded overflow-hidden shadow-sm";
-                    container.id = imgId;
-                    container.innerHTML = `
-                        <img src="${e.target.result}" class="w-full h-full object-cover">
-                        <button onclick="deleteMultipleImage('${galeriId}', '${imgId}')" class="absolute top-0.5 right-0.5 bg-siyah/80 hover:bg-siyah text-krem text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center transition opacity-0 group-hover:opacity-100">✕</button>
-                    `;
-                    galeri.appendChild(container);
-                    savePageContent();
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function deleteMultipleImage(galeriId, imgId) {
-            document.getElementById(imgId).remove();
-            savePageContent();
-        }
-
+        
         function saveKapakData() {
             localStorage.setItem("kapak_baslik", document.getElementById("kapakBasligi").innerHTML);
             localStorage.setItem("kapak_alt_baslik", document.getElementById("kapakAltBasligi").innerHTML);
@@ -352,57 +189,34 @@ document.getElementById("kapakAltBasligi").addEventListener("input", saveKapakDa
             if(localStorage.getItem("kapak_alt_baslik")) document.getElementById("kapakAltBasligi").innerHTML = localStorage.getItem("kapak_alt_baslik");
         }
 
+        function nextPage() { if (currentPagePair < maxPagePairs) { savePageContent(); currentPagePair++; loadPageContent(); } }
+        function prevPage() { if (currentPagePair > 1) { savePageContent(); currentPagePair--; loadPageContent(); } }
+
         function savePageContent() {
             let pSol = (currentPagePair * 2) - 1;
             let pSag = currentPagePair * 2;
-
             localStorage.setItem(`p_${pSol}_title`, document.getElementById("ustBaslikSol").innerHTML);
             localStorage.setItem(`p_${pSol}_text`, document.getElementById("editorSol").innerHTML);
-            localStorage.setItem(`p_${pSol}_galeri`, document.getElementById("galeriSol").innerHTML);
-
             localStorage.setItem(`p_${pSag}_title`, document.getElementById("ustBaslikSag").innerHTML);
             localStorage.setItem(`p_${pSag}_text`, document.getElementById("editorSag").innerHTML);
-            localStorage.setItem(`p_${pSag}_galeri`, document.getElementById("galeriSag").innerHTML);
         }
 
         function loadPageContent() {
             let pSol = (currentPagePair * 2) - 1;
             let pSag = currentPagePair * 2;
-
             document.getElementById("sayfaNoSol").innerText = `S. ${pSol}`;
             document.getElementById("sayfaNoSag").innerText = `S. ${pSag}`;
-
-            document.getElementById("ustBaslikSol").innerHTML = localStorage.getItem(`p_${pSol}_title`) || `Glow Up Journey`;
-            document.getElementById("ustBaslikSag").innerHTML = localStorage.getItem(`p_${pSag}_title`) || `Glow Up Journey`;
-
-            document.getElementById("editorSol").innerHTML = localStorage.getItem(`p_${pSol}_text`) || getTemplateForPage(pSol);
-            document.getElementById("editorSag").innerHTML = localStorage.getItem(`p_${pSag}_text`) || getTemplateForPage(pSag);
-
-            document.getElementById("galeriSol").innerHTML = localStorage.getItem(`p_${pSol}_galeri`) || "";
-            document.getElementById("galeriSag").innerHTML = localStorage.getItem(`p_${pSag}_galeri`) || "";
-
-            let currentCiltNum = 1;
-            for (let c in ciltBasiSayfalari) {
-                if (pSol >= ciltBasiSayfalari[c]) currentCiltNum = c;
-            }
-            document.querySelectorAll('.cilt-btn').forEach((btn, idx) => {
-                btn.className = (idx + 1 == currentCiltNum) ? "cilt-btn px-2 py-0.5 bg-siyah text-krem rounded font-light" : "cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light";
-            });
+            document.getElementById("ustBaslikSol").innerHTML = localStorage.getItem(`p_${pSol}_title`) || "Başlık";
+            document.getElementById("editorSol").innerHTML = localStorage.getItem(`p_${pSol}_text`) || "İçerik...";
+            document.getElementById("ustBaslikSag").innerHTML = localStorage.getItem(`p_${pSag}_title`) || "Başlık";
+            document.getElementById("editorSag").innerHTML = localStorage.getItem(`p_${pSag}_text`) || "İçerik...";
         }
 
-// Mobil Kaydırma Motoru
-const icSayfaDiv = document.getElementById('icSayfalar');
-const mc = new Hammer(icSayfaDiv);
-
-mc.on("swipeleft", function() {
-    // Sola kaydırınca sonraki sayfaya git
-    nextPage();
-});
-
-mc.on("swiperight", function() {
-    // Sağa kaydırınca önceki sayfaya git
-    prevPage();
-});
+        // Hammer.js için tanımlama
+        const icSayfaDiv = document.getElementById('icSayfalar');
+        const mc = new Hammer(icSayfaDiv);
+        mc.on("swipeleft", nextPage);
+        mc.on("swiperight", prevPage);
     </script>
 </body>
 </html>
