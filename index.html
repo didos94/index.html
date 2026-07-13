@@ -84,24 +84,31 @@
         
         .kesif-kutusu { background: rgba(245, 240, 230, 0.35); border: 1px dashed #EBE4D5; padding: 12px; border-radius: 6px; }
 
-/* MOBİL DÜZENLEME - BURAYI EKLEYİN */
-        @media (max-width: 768px) {
-            .kitap-ic-sayfalar {
-                flex-direction: column !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                border-radius: 0 !important;
-            }
-            .sol-sayfa, .sag-sayfa {
-                width: 100% !important;
-                height: 100% !important;
-                border-radius: 0 !important;
-            }
-        }
-        /* --- */
-    </style>
+@media (max-width: 768px) {
+    .kitap-ic-sayfalar {
+        flex-direction: row !important; /* Mobilde de yan yana ama biz sadece birini göstereceğiz */
+        width: 100vw !important;
+        height: 100vh !important;
+        transform: none !important;
+        top: 0 !important;
+        left: 0 !important;
+        border-radius: 0 !important;
+        overflow: hidden !important;
+    }
+    .sol-sayfa, .sag-sayfa {
+        flex: 0 0 100vw !important; /* Her sayfa tam ekran */
+        width: 100vw !important;
+        height: 100vh !important;
+        border-radius: 0 !important;
+    }
+}
 
-
+/* Masaüstü (768px üzeri) için varsayılan flex yapısının korunduğundan emin olun */
+@media (min-width: 769px) {
+    .kitap-ic-sayfalar { display: flex !important; flex-direction: row !important; }
+    .sol-sayfa, .sag-sayfa { flex: 1 !important; display: flex !important; }
+}
+   
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
@@ -389,23 +396,44 @@ document.getElementById("kapakAltBasligi").addEventListener("input", saveKapakDa
             });
         }
 
-// MOBİL KAYDIRMA - BURAYI EKLEYİN
-        let touchStartX = 0;
-        let touchEndX = 0;
-        const sahne = document.getElementById('sahne');
+function loadPageContent() {
+    let pSol = (currentPagePair * 2) - 1;
+    let pSag = currentPagePair * 2;
 
-        sahne.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
+    document.getElementById("sayfaNoSol").innerText = `S. ${pSol}`;
+    document.getElementById("sayfaNoSag").innerText = `S. ${pSag}`;
 
-        sahne.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            if (Math.abs(touchEndX - touchStartX) > 50) {
-                if (touchEndX < touchStartX) nextPage();
-                else prevPage();
-            }
-        }, { passive: true });
-        // ---
+    // İçerikleri yükle
+    document.getElementById("ustBaslikSol").innerHTML = localStorage.getItem(`p_${pSol}_title`) || `Glow Up Journey`;
+    document.getElementById("ustBaslikSag").innerHTML = localStorage.getItem(`p_${pSag}_title`) || `Glow Up Journey`;
+    document.getElementById("editorSol").innerHTML = localStorage.getItem(`p_${pSol}_text`) || getTemplateForPage(pSol);
+    document.getElementById("editorSag").innerHTML = localStorage.getItem(`p_${pSag}_text`) || getTemplateForPage(pSag);
+    document.getElementById("galeriSol").innerHTML = localStorage.getItem(`p_${pSol}_galeri`) || "";
+    document.getElementById("galeriSag").innerHTML = localStorage.getItem(`p_${pSag}_galeri`) || "";
+
+    // EKRAN BOYUTUNA GÖRE GÖRÜNÜRLÜK (MOBİL/MASAÜSTÜ)
+    const isMobile = window.innerWidth <= 768;
+    const sagSayfa = document.querySelector('.sag-sayfa');
+    
+    if (isMobile) {
+        sagSayfa.style.display = 'none'; // Mobilde sağ sayfayı gizle
+        document.querySelector('.sol-sayfa').style.width = '100%';
+    } else {
+        sagSayfa.style.display = 'flex'; // Masaüstünde göster
+        document.querySelector('.sol-sayfa').style.width = '50%';
+    }
+
+    // Cilt butonu güncelleme
+    let currentCiltNum = 1;
+    for (let c in ciltBasiSayfalari) {
+        if (pSol >= ciltBasiSayfalari[c]) currentCiltNum = c;
+    }
+    document.querySelectorAll('.cilt-btn').forEach((btn, idx) => {
+        btn.className = (idx + 1 == currentCiltNum) ? "cilt-btn px-2 py-0.5 bg-siyah text-krem rounded font-light" : "cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light";
+    });
+}        // ---
+
+window.addEventListener('resize', loadPageContent);
     </script>
 </body>
 </html>
