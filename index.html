@@ -227,11 +227,11 @@ document.getElementById("kapakAltBasligi").addEventListener("input", saveKapakDa
             document.getElementById("sagOk").classList.add("opacity-0", "pointer-events-none");
         }
 
-        function changeCoverColor(colorHex) { 
-    // 1. Rengi anlık olarak uygula
-    document.getElementById("kapakOn").style.backgroundColor = colorHex; 
+       function changeCoverColor(colorHex) {
+    // Kapağın rengini anında değiştir
+    document.getElementById("kapakOn").style.backgroundColor = colorHex;
     
-    // 2. Rengi kalıcı olarak tarayıcıya kaydet
+    // Rengi tarayıcı hafızasına kalıcı olarak yaz
     localStorage.setItem("kapakRengi", colorHex);
 }
 
@@ -358,6 +358,7 @@ document.getElementById("kapakAltBasligi").addEventListener("input", saveKapakDa
         function saveKapakData() {
             localStorage.setItem("kapak_baslik", document.getElementById("kapakBasligi").innerHTML);
             localStorage.setItem("kapak_alt_baslik", document.getElementById("kapakAltBasligi").innerHTML);
+            
         }
 
         function loadKapakData() {
@@ -466,15 +467,10 @@ function importData(event) {
     };
     reader.readAsText(file);
 }
-// Sayfa yüklendiği anda çalışacak olan kod
 window.addEventListener('load', () => {
-    // 1. LocalStorage'dan kaydedilen rengi çek
     const kaydedilenRenk = localStorage.getItem("kapakRengi");
-    
-    // 2. Eğer daha önce bir renk seçilmişse (kayıtlıysa)
     if (kaydedilenRenk) {
-        // 3. O rengi panelin arka planına uygula
-        document.getElementById("renk-paneli").style.backgroundColor = kaydedilenRenk;
+        document.getElementById("kapakOn").style.backgroundColor = kaydedilenRenk;
     }
 });
     </script>
