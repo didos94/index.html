@@ -83,6 +83,25 @@
         .sablon-tablo th { background-color: #F5F0E6; font-weight: 400; }
         
         .kesif-kutusu { background: rgba(245, 240, 230, 0.35); border: 1px dashed #EBE4D5; padding: 12px; border-radius: 6px; }
+
+/* MOBİL DÜZENLEME - BURAYI EKLEYİN */
+        @media (max-width: 768px) {
+            .kitap-ic-sayfalar {
+                flex-direction: column !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                border-radius: 0 !important;
+            }
+            .sol-sayfa, .sag-sayfa {
+                width: 100% !important;
+                height: 100% !important;
+                border-radius: 0 !important;
+            }
+        }
+        /* --- */
+    </style>
+
+
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
@@ -369,6 +388,24 @@ document.getElementById("kapakAltBasligi").addEventListener("input", saveKapakDa
                 btn.className = (idx + 1 == currentCiltNum) ? "cilt-btn px-2 py-0.5 bg-siyah text-krem rounded font-light" : "cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light";
             });
         }
+
+// MOBİL KAYDIRMA - BURAYI EKLEYİN
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const sahne = document.getElementById('sahne');
+
+        sahne.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        sahne.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (Math.abs(touchEndX - touchStartX) > 50) {
+                if (touchEndX < touchStartX) nextPage();
+                else prevPage();
+            }
+        }, { passive: true });
+        // ---
     </script>
 </body>
 </html>
