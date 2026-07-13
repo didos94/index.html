@@ -418,7 +418,9 @@ function loadPageContent() {
     document.getElementById("editorSag").innerHTML = localStorage.getItem(`p_${pSag}_text`) || getTemplateForPage(pSag);
     document.getElementById("galeriSol").innerHTML = localStorage.getItem(`p_${pSol}_galeri`) || "";
     document.getElementById("galeriSag").innerHTML = localStorage.getItem(`p_${pSag}_galeri`) || "";
-
+    document.getElementById("editorsSol").addEventListener("input", savePageContent);
+    document.getElementById("editorsSag").addEventListener("input", savePageContent);
+    
     // EKRAN BOYUTUNA GÖRE GÖRÜNÜRLÜK (MOBİL/MASAÜSTÜ)
     const isMobile = window.innerWidth <= 768;
     const sagSayfa = document.querySelector('.sag-sayfa');
@@ -467,9 +469,14 @@ function importData(event) {
     };
     reader.readAsText(file);
 }
+// Sayfa yüklendiği anda çalışacak olan kod
 window.addEventListener('load', () => {
+    // 1. LocalStorage'dan kaydedilen rengi çek
     const kaydedilenRenk = localStorage.getItem("kapakRengi");
+    
+    // 2. Eğer daha önce bir renk seçilmişse
     if (kaydedilenRenk) {
+        // 3. O rengi ASIL kapak öğesine (kapakOn) uygula
         document.getElementById("kapakOn").style.backgroundColor = kaydedilenRenk;
     }
 });
