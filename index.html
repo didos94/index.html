@@ -227,7 +227,13 @@ document.getElementById("kapakAltBasligi").addEventListener("input", saveKapakDa
             document.getElementById("sagOk").classList.add("opacity-0", "pointer-events-none");
         }
 
-        function changeCoverColor(colorHex) { document.getElementById("kapakOn").style.backgroundColor = colorHex; }
+        function changeCoverColor(colorHex) { 
+    // 1. Rengi anlık olarak uygula
+    document.getElementById("kapakOn").style.backgroundColor = colorHex; 
+    
+    // 2. Rengi kalıcı olarak tarayıcıya kaydet
+    localStorage.setItem("kapakRengi", colorHex);
+}
 
         // KUSURSUZ SIRALI HAFTALIK VE GÜNLÜK AKIŞ MOTORU (Döngü = 12 Sayfa)
         function getTemplateForPage(pNum) {
@@ -460,6 +466,13 @@ function importData(event) {
     };
     reader.readAsText(file);
 }
+// Sayfa açıldığında kaydedilen rengi uygula
+window.addEventListener('load', () => {
+    const kaydedilenRenk = localStorage.getItem("kapakRengi");
+    if (kaydedilenRenk) {
+        document.getElementById("renk-paneli").style.backgroundColor = kaydedilenRenk;
+    }
+});        
     </script>
 </body>
 </html>
