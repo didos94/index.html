@@ -124,6 +124,18 @@
 <button onclick="exportData()" class="px-3 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300">Yedekle</button>
 <input type="file" id="importFile" onchange="importData(event)" class="hidden">
 <button onclick="document.getElementById('importFile').click()" class="px-3 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300">Geri Yükle</button>
+
+function changeCoverColor(color) {
+    document.getElementById("renk-paneli").style.backgroundColor = color;
+    localStorage.setItem("kapakRengi", color); // Sadece bu satırı ekleyin!
+} 
+
+window.addEventListener('load', () => {
+    const kaydedilenRenk = localStorage.getItem("kapakRengi");
+    if (kaydedilenRenk) {
+        document.getElementById("renk-paneli").style.backgroundColor = kaydedilenRenk;
+    }
+});
     </div>
 
     <!-- 3D SAHNE -->
@@ -462,6 +474,14 @@ function importData(event) {
     };
     reader.readAsText(file);
 }
+
+// Sayfa açıldığında kaydedilen rengi uygula
+window.addEventListener('load', () => {
+    const kaydedilenRenk = localStorage.getItem("kapakRengi");
+    if (kaydedilenRenk) {
+        document.getElementById("renk-paneli").style.backgroundColor = kaydedilenRenk;
+    }
+});
     </script>
 </body>
 </html>
