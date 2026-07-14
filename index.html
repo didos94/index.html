@@ -469,6 +469,10 @@ function importData(event) {
     };
     reader.readAsText(file);
 }
+
+   document.getElementById("editorSol").addEventListener("input", savePageContent);
+document.getElementById("editorSag").addEventListener("input", savePageContent);
+        
 // Sayfa yüklendiği anda çalışacak olan kod
 window.addEventListener('load', () => {
     // 1. LocalStorage'dan kaydedilen rengi çek
@@ -480,6 +484,9 @@ window.addEventListener('load', () => {
         document.getElementById("kapakOn").style.backgroundColor = kaydedilenRenk;
     }
 });
+    loadKapakData();
+    loadPageContent(); 
+});    
     </script>
 </body>
 </html>
