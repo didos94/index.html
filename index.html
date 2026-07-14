@@ -489,5 +489,47 @@ window.addEventListener('load', () => {
 });
     
     </script>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA8Z1EQK5W8ZeBDMuHwHASa19iiY0mklts",
+  authDomain: "glow-up-journal-ceb43.firebaseapp.com",
+  projectId: "glow-up-journal-ceb43",
+  storageBucket: "glow-up-journal-ceb43.firebasestorage.app",
+  messagingSenderId: "67391253274",
+  appId: "1:67391253274:web:bb58d17ae12fa0fd4e1aa3"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+window.firebaseDB = db;
+window.firebaseAuth = auth;
+window.firebaseProvider = provider;
+
+console.log("Firebase Hazır");
+
+</script>
+
 </body>
 </html>
