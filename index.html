@@ -603,9 +603,28 @@ window.addEventListener('load', () => {
             console.log("Kullanıcı çıkış yapmış durumda.");
         }
     });
-
+window.firebaseDB = db; // Veritabanını global yapıyoruz
     console.log("Firebase ve Bağlantı Fonksiyonları Hazır");
-</script>
 
+    async function acilAktarim() {
+    if (!window.currentUser) { alert("Önce Google ile giriş yap!"); return; }
+    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js");
+    alert("Aktarım başlıyor...");
+    for (let i = 1; i <= 300; i++) {
+        let title = localStorage.getItem(`p_${i}_title`);
+        let text = localStorage.getItem(`p_${i}_text`);
+        if (title || text) {
+            let pair = Math.ceil(i / 2);
+            let docRef = doc(window.firebaseDB, "users", window.currentUser.uid, "pages", "page_pair_" + pair);
+            await setDoc(docRef, {
+                [`p${i % 2 !== 0 ? 'Sol' : 'Sag'}_title`]: title || "",
+                [`p${i % 2 !== 0 ? 'Sol' : 'Sag'}_text`]: text || ""
+            }, { merge: true });
+        }
+    }
+    alert("Bitti! Tüm veriler buluta uçtu.");
+}
+</script>
+<button onclick="acilAktarim()" style="position:fixed; bottom:20px; right:20px; z-index:9999; padding:15px; background:red; color:white; border-radius:10px;">VERİLERİ BULUTA GÖNDER</button>
 </body>
 </html>
