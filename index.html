@@ -625,6 +625,9 @@ window.firebaseDB = db; // Veritabanını global yapıyoruz
     alert("Bitti! Tüm veriler buluta uçtu.");
 }
 </script>
-<button onclick="acilAktarim()" style="position:fixed; bottom:20px; right:20px; z-index:9999; padding:20px; background:red; color:white; border-radius:10px; cursor:pointer; font-weight:bold; font-size:16px;">VERİLERİ BULUTA GÖNDER</button>
+<button id="butonAktar" style="position:fixed; bottom:20px; right:20px; z-index:9999; padding:20px; background:red; color:white; border-radius:10px; cursor:pointer;">VERİLERİ BULUTA GÖNDER</button>
+   <script>
+document.getElementById("butonAktar").addEventListener("click", acilAktarim);
+</script>
 </body>
 </html>
