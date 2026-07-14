@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>THE LUXE MEMOIR | CHRONOLOGICAL CHIC</title>
@@ -113,6 +114,14 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
+<div class="mb-4 flex gap-2">
+    <button onclick="googleGirisYap()" class="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition">
+        Google ile Giriş
+    </button>
+    <button onclick="cikisYap()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+        Çıkış
+    </button>
+</div>
     <!-- ÜST RENK PALETİ -->
     <div id="renk-paneli" class="mb-6 flex space-x-3 bg-transparent px-5 py-2 rounded-full border border-koyubej shadow-sm z-50 transition-opacity duration-500">
         <span class="text-xs font-light text-gray-500 self-center mr-2">Kapak Rengi:</span>
@@ -366,43 +375,98 @@ document.getElementById("kapakAltBasligi").addEventListener("input", saveKapakDa
             if(localStorage.getItem("kapak_alt_baslik")) document.getElementById("kapakAltBasligi").innerHTML = localStorage.getItem("kapak_alt_baslik");
         }
 
-        function savePageContent() {
-            let pSol = (currentPagePair * 2) - 1;
-            let pSag = currentPagePair * 2;
+       async function savePageContent() {
+    let pSol = (currentPagePair * 2) - 1;
+    let pSag = currentPagePair * 2;
 
-            localStorage.setItem(`p_${pSol}_title`, document.getElementById("ustBaslikSol").innerHTML);
-            localStorage.setItem(`p_${pSol}_text`, document.getElementById("editorSol").innerHTML);
-            localStorage.setItem(`p_${pSol}_galeri`, document.getElementById("galeriSol").innerHTML);
+    // 1. Önce her zamanki gibi local'e yedekle (hızlı erişim için)
+    localStorage.setItem(`p_${pSol}_title`, document.getElementById("ustBaslikSol").innerHTML);
+    localStorage.setItem(`p_${pSol}_text`, document.getElementById("editorSol").innerHTML);
+    localStorage.setItem(`p_${pSol}_galeri`, document.getElementById("galeriSol").innerHTML);
 
-            localStorage.setItem(`p_${pSag}_title`, document.getElementById("ustBaslikSag").innerHTML);
-            localStorage.setItem(`p_${pSag}_text`, document.getElementById("editorSag").innerHTML);
-            localStorage.setItem(`p_${pSag}_galeri`, document.getElementById("galeriSag").innerHTML);
-        }
+    localStorage.setItem(`p_${pSag}_title`, document.getElementById("ustBaslikSag").innerHTML);
+    localStorage.setItem(`p_${pSag}_text`, document.getElementById("editorSag").innerHTML);
+    localStorage.setItem(`p_${pSag}_galeri`, document.getElementById("galeriSag").innerHTML);
 
-        function loadPageContent() {
-            let pSol = (currentPagePair * 2) - 1;
-            let pSag = currentPagePair * 2;
-
-            document.getElementById("sayfaNoSol").innerText = `S. ${pSol}`;
-            document.getElementById("sayfaNoSag").innerText = `S. ${pSag}`;
-
-            document.getElementById("ustBaslikSol").innerHTML = localStorage.getItem(`p_${pSol}_title`) || `Glow Up Journey`;
-            document.getElementById("ustBaslikSag").innerHTML = localStorage.getItem(`p_${pSag}_title`) || `Glow Up Journey`;
-
-            document.getElementById("editorSol").innerHTML = localStorage.getItem(`p_${pSol}_text`) || getTemplateForPage(pSol);
-            document.getElementById("editorSag").innerHTML = localStorage.getItem(`p_${pSag}_text`) || getTemplateForPage(pSag);
-
-            document.getElementById("galeriSol").innerHTML = localStorage.getItem(`p_${pSol}_galeri`) || "";
-            document.getElementById("galeriSag").innerHTML = localStorage.getItem(`p_${pSag}_galeri`) || "";
-
-            let currentCiltNum = 1;
-            for (let c in ciltBasiSayfalari) {
-                if (pSol >= ciltBasiSayfalari[c]) currentCiltNum = c;
-            }
-            document.querySelectorAll('.cilt-btn').forEach((btn, idx) => {
-                btn.className = (idx + 1 == currentCiltNum) ? "cilt-btn px-2 py-0.5 bg-siyah text-krem rounded font-light" : "cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light";
+    // 2. EĞER KULLANICI GİRİŞ YAPTIYSA FİREBASE'E GÖNDER
+    if (window.currentUser) {
+        try {
+            // Firestore işlemleri için gereken fonksiyonları tanımlıyoruz
+            const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js");
+            
+            // Kullanıcının ID'sine özel bir klasör (document) oluşturuyoruz
+            const docRef = doc(window.firebaseDB, "users", window.currentUser.uid, "pages", "page_pair_" + currentPagePair);
+            
+            await setDoc(docRef, {
+                pSol_title: document.getElementById("ustBaslikSol").innerHTML,
+                pSol_text: document.getElementById("editorSol").innerHTML,
+                pSol_galeri: document.getElementById("galeriSol").innerHTML,
+                pSag_title: document.getElementById("ustBaslikSag").innerHTML,
+                pSag_text: document.getElementById("editorSag").innerHTML,
+                pSag_galeri: document.getElementById("galeriSag").innerHTML,
+                updatedAt: new Date()
             });
+            
+            console.log("Veri Firebase'e başarıyla kaydedildi!");
+        } catch (error) {
+            console.error("Firebase'e kayıt sırasında hata:", error);
         }
+    }
+}
+
+      async function loadPageContent() {
+    let pSol = (currentPagePair * 2) - 1;
+    let pSag = currentPagePair * 2;
+
+    document.getElementById("sayfaNoSol").innerText = `S. ${pSol}`;
+    document.getElementById("sayfaNoSag").innerText = `S. ${pSag}`;
+
+    // 1. ÖNCE FİREBASE'DEN KONTROL ET (Kullanıcı giriş yaptıysa)
+    if (window.currentUser) {
+        try {
+            const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js");
+            const docRef = doc(window.firebaseDB, "users", window.currentUser.uid, "pages", "page_pair_" + currentPagePair);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById("ustBaslikSol").innerHTML = data.pSol_title;
+                document.getElementById("editorSol").innerHTML = data.pSol_text;
+                document.getElementById("galeriSol").innerHTML = data.pSol_galeri || "";
+                
+                document.getElementById("ustBaslikSag").innerHTML = data.pSag_title;
+                document.getElementById("editorSag").innerHTML = data.pSag_text;
+                document.getElementById("galeriSag").innerHTML = data.pSag_galeri || "";
+                
+                console.log("Veriler Firebase'den yüklendi.");
+                updateCiltUI(pSol);
+                return; // Başarılı olursa fonksiyonu bitir
+            }
+        } catch (e) { console.error("Firebase yükleme hatası:", e); }
+    }
+
+    // 2. FİREBASE'DE VERİ YOKSA LOCALSTORAGE'DAN YÜKLE
+    document.getElementById("ustBaslikSol").innerHTML = localStorage.getItem(`p_${pSol}_title`) || `Glow Up Journey`;
+    document.getElementById("ustBaslikSag").innerHTML = localStorage.getItem(`p_${pSag}_title`) || `Glow Up Journey`;
+    document.getElementById("editorSol").innerHTML = localStorage.getItem(`p_${pSol}_text`) || getTemplateForPage(pSol);
+    document.getElementById("editorSag").innerHTML = localStorage.getItem(`p_${pSag}_text`) || getTemplateForPage(pSag);
+    document.getElementById("galeriSol").innerHTML = localStorage.getItem(`p_${pSol}_galeri`) || "";
+    document.getElementById("galeriSag").innerHTML = localStorage.getItem(`p_${pSag}_galeri`) || "";
+    
+    updateCiltUI(pSol);
+}
+
+// Yardımcı fonksiyon: Cilt butonlarını güncellemek için
+function updateCiltUI(pSol) {
+    let currentCiltNum = 1;
+    const ciltBasiSayfalari = { 1:1, 2:31, 3:61, 4:91, 5:121, 6:151, 7:181, 8:211, 9:241, 10:271 };
+    for (let c in ciltBasiSayfalari) {
+        if (pSol >= ciltBasiSayfalari[c]) currentCiltNum = c;
+    }
+    document.querySelectorAll('.cilt-btn').forEach((btn, idx) => {
+        btn.className = (idx + 1 == currentCiltNum) ? "cilt-btn px-2 py-0.5 bg-siyah text-krem rounded font-light" : "cilt-btn px-2 py-0.5 bg-bej text-gray-600 rounded font-light";
+    });
+}
 
 function loadPageContent() {
     let pSol = (currentPagePair * 2) - 1;
@@ -418,8 +482,8 @@ function loadPageContent() {
     document.getElementById("editorSag").innerHTML = localStorage.getItem(`p_${pSag}_text`) || getTemplateForPage(pSag);
     document.getElementById("galeriSol").innerHTML = localStorage.getItem(`p_${pSol}_galeri`) || "";
     document.getElementById("galeriSag").innerHTML = localStorage.getItem(`p_${pSag}_galeri`) || "";
-    document.getElementById("editorsSol").addEventListener("input", savePageContent);
-    document.getElementById("editorsSag").addEventListener("input", savePageContent);
+    document.getElementById("editorSol").addEventListener("input", savePageContent);
+    document.getElementById("editorSag").addEventListener("input", savePageContent);
     
     // EKRAN BOYUTUNA GÖRE GÖRÜNÜRLÜK (MOBİL/MASAÜSTÜ)
     const isMobile = window.innerWidth <= 768;
@@ -490,45 +554,57 @@ window.addEventListener('load', () => {
     
     </script>
 <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    const firebaseConfig = {
+        apiKey: "AIzaSyA8Z1EQK5W8ZeBDMuHwHASa19iiY0mklts",
+        authDomain: "glow-up-journal-ceb43.firebaseapp.com",
+        projectId: "glow-up-journal-ceb43",
+        storageBucket: "glow-up-journal-ceb43.firebasestorage.app",
+        messagingSenderId: "67391253274",
+        appId: "1:67391253274:web:bb58d17ae12fa0fd4e1aa3"
+    };
 
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+    // 1500 satırlık ana kodunla haberleşmeyi sağlayacak bağlantılar
+    window.googleGirisYap = () => {
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                console.log("Giriş başarılı:", result.user.displayName);
+                alert("Hoş geldin, " + result.user.displayName);
+                // Burada istersen sayfanı yenileyebilir veya kullanıcıyı yönlendirebilirsin
+            })
+            .catch((error) => {
+                console.error("Giriş hatası:", error);
+                alert("Giriş yapılamadı: " + error.message);
+            });
+    };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA8Z1EQK5W8ZeBDMuHwHASa19iiY0mklts",
-  authDomain: "glow-up-journal-ceb43.firebaseapp.com",
-  projectId: "glow-up-journal-ceb43",
-  storageBucket: "glow-up-journal-ceb43.firebasestorage.app",
-  messagingSenderId: "67391253274",
-  appId: "1:67391253274:web:bb58d17ae12fa0fd4e1aa3"
-};
+    window.cikisYap = () => {
+        signOut(auth).then(() => {
+            alert("Çıkış yapıldı.");
+            location.reload();
+        });
+    };
 
-const app = initializeApp(firebaseConfig);
+    // Kullanıcı giriş durumunu takip et
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            window.currentUser = user;
+            console.log("Kullanıcı giriş yapmış:", user.uid);
+        } else {
+            window.currentUser = null;
+            console.log("Kullanıcı çıkış yapmış durumda.");
+        }
+    });
 
-const db = getFirestore(app);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-
-window.firebaseDB = db;
-window.firebaseAuth = auth;
-window.firebaseProvider = provider;
-
-console.log("Firebase Hazır");
-
+    console.log("Firebase ve Bağlantı Fonksiyonları Hazır");
 </script>
 
 </body>
